@@ -16,11 +16,13 @@
 # Base path used to install.
 CMD_DESTDIR ?= /usr/local
 GO111MODULE_VALUE=auto
-PREFIX ?= $(CURDIR)/out/
+PREFIX=$(CURDIR)/out
 
 PKG=github.com/containerd/stargz-snapshotter
-VERSION=$(shell git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
-REVISION=$(shell git rev-parse HEAD)$(shell if ! git diff --no-ext-diff --quiet --exit-code; then echo .m; fi)
+VERSION=${OS_GIT_VERSION}
+REVISION=${OS_GIT_COMMIT}
+#VERSION=$(shell git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
+#REVISION=$(shell git rev-parse HEAD)$(shell if ! git diff --no-ext-diff --quiet --exit-code; then echo .m; fi)
 GO_BUILD_LDFLAGS ?= -s -w
 GO_LD_FLAGS=-ldflags '$(GO_BUILD_LDFLAGS) -X $(PKG)/version.Version=$(VERSION) -X $(PKG)/version.Revision=$(REVISION) $(GO_EXTRA_LDFLAGS)'
 
@@ -37,13 +39,13 @@ build: $(CMD)
 FORCE:
 
 containerd-stargz-grpc: FORCE
-	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./containerd-stargz-grpc
+	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)/$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./containerd-stargz-grpc
 
 ctr-remote: FORCE
-	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./ctr-remote
+	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)/$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./ctr-remote
 
 stargz-store: FORCE
-	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./stargz-store
+	cd cmd/ ; GO111MODULE=$(GO111MODULE_VALUE) go build -o $(PREFIX)/$@ $(GO_BUILD_FLAGS) $(GO_LD_FLAGS) -v ./stargz-store
 
 check:
 	@echo "$@"
